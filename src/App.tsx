@@ -1,9 +1,23 @@
-import React from "react";
+import React, {useEffect, useState} from "react";
 import {CircularProgressbar} from "react-circular-progressbar";
 import "react-circular-progressbar/dist/styles.css";
+import {onValue, ref} from "firebase/database";
+import {db} from "./index";
 
 function App() {
-    const percentage = 66;
+    const [temperature, setTemperature] = useState(0);
+    const [humidity, setHumidity] = useState(0);
+    const [heatIndex, setHeatIndex] = useState(0);
+
+    useEffect(() => {
+        const data = ref(db, "dht22/");
+        onValue(data, (snapshot) => {
+            const val = snapshot.val();
+            setTemperature(val.temperature);
+            setHumidity(val.humidity);
+            setHeatIndex(val.heatindex.toFixed(1));
+        });
+    });
 
     return (
         <div className="p-5 bg-white dark:bg-gray-900 antialiased min-h-screen">
@@ -18,27 +32,30 @@ function App() {
                 <div className="flex flex-col items-center p-4">
                     <div className="flex flex-col md:flex-row md:space-x-4 w-full">
                         <div className="flex-none self-center w-full md:w-1/4 mb-4 md:mb-0">
-                            <div className="block p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                            <div
+                                className="block p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
                                 <h5 className="text-center mb-10 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
-                                    Humadity
+                                    Humidity
                                 </h5>
-                                <CircularProgressbar value={percentage} text={`${percentage}%`}/>
+                                <CircularProgressbar value={humidity} text={`${humidity}%`}/>
                             </div>
                         </div>
                         <div className="flex-none w-full md:w-1/2 mb-4 md:mb-0">
-                            <div className="block p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                            <div
+                                className="block p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
                                 <h5 className="text-center mb-10 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
                                     Temperature
                                 </h5>
-                                <CircularProgressbar value={percentage} text={`${percentage}°C`}/>
+                                <CircularProgressbar value={temperature} text={`${temperature}°C`}/>
                             </div>
                         </div>
                         <div className="flex-none self-center w-full md:w-1/4">
-                            <div className="block p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
+                            <div
+                                className="block p-6 bg-white border border-gray-200 rounded-lg shadow dark:bg-gray-800 dark:border-gray-700">
                                 <h5 className="text-center mb-10 text-2xl font-bold tracking-tight text-gray-900 dark:text-white">
                                     Heat Index
                                 </h5>
-                                <CircularProgressbar value={percentage} text={`${percentage}°C`}/>
+                                <CircularProgressbar value={heatIndex} text={`${heatIndex}°C`}/>
                             </div>
                         </div>
                     </div>
